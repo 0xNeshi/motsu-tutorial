@@ -18,7 +18,7 @@ stylus-sdk = { version = "0.8.3", default-features = false, features = [
     "mini-alloc",
 ] }
 # we use the latest alpha release to get the latest features and fixes
-openzeppelin-stylus = "0.2.0-alpha.4"
+openzeppelin-stylus = "0.2.0-alpha.5"
 
 [dev-dependencies]
 tokio = { version = "1.12.0", features = ["full"] }
