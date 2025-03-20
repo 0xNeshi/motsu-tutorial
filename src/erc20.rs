@@ -54,11 +54,11 @@ mod tests {
         assert_eq!(token.sender(alice).erc20.balance_of(bob), transfer_amount);
 
         // Verify event was emitted
-        // token.assert_emitted(&Transfer {
-        //     from: alice,
-        //     to: bob,
-        //     value: transfer_amount,
-        // });
+        token.assert_emitted(&Transfer {
+            from: alice,
+            to: bob,
+            value: transfer_amount,
+        });
 
         // Test failure case - transfer more than balance
         let too_much = amount * U256::from(2);
