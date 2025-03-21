@@ -160,7 +160,7 @@ mod tests {
 
         contract.sender_and_value(alice, U256::from(1)).deposit();
 
-        // Accidentally assert an event with wrong parameters was emitted
+        // Accidentally assert that an event with wrong parameters was emitted
         contract.assert_emitted(&Deposited {
             account: alice,
             value: U256::from(100),
