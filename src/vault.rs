@@ -154,6 +154,20 @@ mod tests {
     }
 
     #[motsu::test]
+    #[should_panic = "event was not emitted, matching events: [Deposited { account: alice, value: 1 }]"]
+    fn test_event_mismatch(contract: Contract<Vault>, alice: Address) {
+        alice.fund(U256::from(10));
+
+        contract.sender_and_value(alice, U256::from(1)).deposit();
+
+        // Accidentally assert an event with wrong parameters was emitted
+        contract.assert_emitted(&Deposited {
+            account: alice,
+            value: U256::from(100),
+        });
+    }
+
+    #[motsu::test]
     fn test_revert(contract: Contract<Vault>, alice: Address) {
         // Attempt an operation that should revert
         let err = contract
@@ -171,9 +185,29 @@ mod tests {
         ));
     }
 
+    // Addresses for contract and alice are derived from tags with the same
+    // values, so Motsu is able to substitute them in the panic message.
     #[motsu::test]
-    #[should_panic(expected = "account alice should fail to call contract")]
-    fn test_panic(contract: Contract<Vault>, alice: Address) {
+    #[should_panic = "account alice should fail to call contract"]
+    fn test_panic_with_tags(contract: Contract<Vault>, alice: Address) {
+        contract.sender(alice).increase_balance(U256::from(100));
+
+        // Attempt an operation that should succeed
+        _ = contract
+            .sender(alice)
+            .decrease_balance(U256::from(100))
+            .motsu_unwrap_err();
+    }
+
+    // Since in this case tags were not used to instantiate addresses,
+    // address values are used as-is in the panic message.
+    #[test]
+    #[should_panic = "account 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef should fail to call 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"]
+    fn test_panic_no_tags() {
+        let alice = address!("DeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF");
+        let contract =
+            Contract::<Vault>::new_at(address!("f39Fd6e51aad88F6F4ce6aB8827279cffFb92266"));
+
         contract.sender(alice).increase_balance(U256::from(100));
 
         // Attempt an operation that should succeed
