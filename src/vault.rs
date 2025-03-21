@@ -97,7 +97,7 @@ mod tests {
         assert_eq!(CONTRACT, contract.address());
     }
 
-    #[motsu::test]
+    #[test]
     fn test_with_named_accounts() {
         let alice = Account::from_tag("alice");
         let bob = Address::from_tag("bob");
@@ -169,5 +169,17 @@ mod tests {
                 needed,
             }) if balance == U256::ZERO && needed == U256::from(1000)
         ));
+    }
+
+    #[motsu::test]
+    #[should_panic(expected = "account alice should fail to call contract")]
+    fn test_panic(contract: Contract<Vault>, alice: Address) {
+        contract.sender(alice).increase_balance(U256::from(100));
+
+        // Attempt an operation that should succeed
+        _ = contract
+            .sender(alice)
+            .decrease_balance(U256::from(100))
+            .motsu_unwrap_err();
     }
 }
