@@ -1,4 +1,4 @@
-use openzeppelin_stylus::token::erc20::{self, Erc20};
+use openzeppelin_stylus::token::erc20::{self, Erc20, IErc20};
 use stylus_sdk::{
     alloy_primitives::{Address, U256},
     prelude::*,
@@ -7,15 +7,48 @@ use stylus_sdk::{
 #[entrypoint]
 #[storage]
 struct MyToken {
-    #[borrow]
     erc20: Erc20,
 }
 
 #[public]
-#[inherit(Erc20)]
+#[implements(IErc20<Error = erc20::Error>)]
 impl MyToken {
     fn mint(&mut self, account: Address, value: U256) -> Result<(), erc20::Error> {
         self.erc20._mint(account, value)
+    }
+}
+
+#[public]
+impl IErc20 for MyToken {
+    type Error = erc20::Error;
+
+    fn total_supply(&self) -> U256 {
+        self.erc20.total_supply()
+    }
+
+    fn balance_of(&self, account: Address) -> U256 {
+        self.erc20.balance_of(account)
+    }
+
+    fn transfer(&mut self, to: Address, value: U256) -> Result<bool, Self::Error> {
+        self.erc20.transfer(to, value)
+    }
+
+    fn allowance(&self, owner: Address, spender: Address) -> U256 {
+        self.erc20.allowance(owner, spender)
+    }
+
+    fn approve(&mut self, spender: Address, value: U256) -> Result<bool, Self::Error> {
+        self.erc20.approve(spender, value)
+    }
+
+    fn transfer_from(
+        &mut self,
+        from: Address,
+        to: Address,
+        value: U256,
+    ) -> Result<bool, Self::Error> {
+        self.erc20.transfer_from(from, to, value)
     }
 }
 

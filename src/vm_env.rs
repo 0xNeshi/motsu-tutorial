@@ -24,7 +24,7 @@ mod tests {
         assert_eq!(contract.sender(alice).get_chain_id(), 42161);
 
         // Change to Sepolia testnet
-        VMContext::current().set_chain_id(11155111);
+        VM::context().set_chain_id(11155111);
 
         // Verify the contract now sees the new chain ID
         assert_eq!(contract.sender(alice).get_chain_id(), 11155111);
