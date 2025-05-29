@@ -28,11 +28,14 @@ sol_interface! {
     }
 }
 
+#[cfg_attr(feature = "contract_to_contract", entrypoint)]
 #[storage]
-#[entrypoint]
 struct Proxy {
     implementation: StorageAddress,
 }
+
+#[cfg(not(feature = "contract_to_contract"))]
+unsafe impl TopLevelStorage for Proxy {}
 
 #[public]
 impl Proxy {

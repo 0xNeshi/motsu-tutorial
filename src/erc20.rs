@@ -4,7 +4,7 @@ use stylus_sdk::{
     prelude::*,
 };
 
-#[entrypoint]
+#[cfg_attr(feature = "erc20", entrypoint)]
 #[storage]
 struct MyToken {
     erc20: Erc20,
@@ -59,6 +59,9 @@ mod tests {
 
     use super::MyToken;
     use openzeppelin_stylus::token::erc20::{self, IErc20, Transfer};
+
+    #[cfg(not(feature = "erc20"))]
+    unsafe impl stylus_sdk::testing::TopLevelStorage for MyToken {}
 
     #[motsu::test]
     fn test_token_transfers(token: Contract<MyToken>, alice: Address, bob: Address) {

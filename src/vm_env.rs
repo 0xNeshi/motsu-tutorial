@@ -1,7 +1,7 @@
 use stylus_sdk::{block, prelude::*};
 
 #[storage]
-#[entrypoint]
+#[cfg_attr(feature = "vm_env", entrypoint)]
 struct MyChainAwareContract;
 
 #[public]
@@ -17,6 +17,9 @@ mod tests {
     use stylus_sdk::alloy_primitives::Address;
 
     use super::MyChainAwareContract;
+
+    #[cfg(not(feature = "vm_env"))]
+    unsafe impl stylus_sdk::testing::TopLevelStorage for MyChainAwareContract {}
 
     #[motsu::test]
     fn test_with_custom_chain_id(contract: Contract<MyChainAwareContract>, alice: Address) {

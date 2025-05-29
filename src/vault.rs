@@ -16,7 +16,7 @@ enum Error {
     BalanceUnderflow(BalanceUnderflow),
 }
 
-#[entrypoint]
+#[cfg_attr(feature = "vault", entrypoint)]
 #[storage]
 struct Vault {
     balance: StorageU256,
@@ -64,6 +64,9 @@ mod tests {
     };
 
     use super::{BalanceUnderflow, Deposited, Error, Vault};
+
+    #[cfg(not(feature = "vault"))]
+    unsafe impl stylus_sdk::testing::TopLevelStorage for Vault {}
 
     #[motsu::test]
     fn reads_balance(contract: Contract<Vault>, alice: Address) {
