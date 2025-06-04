@@ -71,23 +71,22 @@ mod tests {
         token.sender(alice).mint(alice, amount).motsu_unwrap();
 
         // Check initial balances
-        assert_eq!(token.sender(alice).erc20.balance_of(alice), amount);
-        assert_eq!(token.sender(alice).erc20.balance_of(bob), U256::ZERO);
+        assert_eq!(token.sender(alice).balance_of(alice), amount);
+        assert_eq!(token.sender(alice).balance_of(bob), U256::ZERO);
 
         // Transfer tokens
         let transfer_amount = U256::from(30);
         token
             .sender(alice)
-            .erc20
             .transfer(bob, transfer_amount)
             .motsu_unwrap();
 
         // Check updated balances
         assert_eq!(
-            token.sender(alice).erc20.balance_of(alice),
+            token.sender(alice).balance_of(alice),
             amount - transfer_amount
         );
-        assert_eq!(token.sender(alice).erc20.balance_of(bob), transfer_amount);
+        assert_eq!(token.sender(alice).balance_of(bob), transfer_amount);
 
         // Verify event was emitted
         token.assert_emitted(&Transfer {
@@ -100,7 +99,6 @@ mod tests {
         let too_much = amount * U256::from(2);
         let err = token
             .sender(alice)
-            .erc20
             .transfer(bob, too_much)
             .motsu_unwrap_err();
         assert!(matches!(err, erc20::Error::InsufficientBalance(_)));
